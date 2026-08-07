@@ -104,6 +104,7 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${poppins.variable} dark`}>
       <head>
         <meta name="monetag" content="f622def877abebe418e5d809d67d9c50" />
+        <script src="https://quge5.com/88/tag.min.js" data-zone="267792" async data-cfasync="false"></script>
         {adsenseClient && settings.enableAds && (
           <script
             async
