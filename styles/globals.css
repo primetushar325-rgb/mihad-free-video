@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   MIHAD FREE VIDEO — Global styles
+   Premium Golden + Black luxury theme.
+   ============================================================ */
+
+:root {
+  --gold: #f5a623;
+  --gold-light: #ffd24d;
+  --bg: #050505;
+  --surface: rgba(255, 255, 255, 0.04);
+  --border: rgba(245, 166, 35, 0.18);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: #f5f5f5;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background-image:
+    radial-gradient(900px 500px at 50% -10%, rgba(245, 166, 35, 0.1), transparent 60%),
+    radial-gradient(700px 400px at 100% 100%, rgba(245, 166, 35, 0.06), transparent 60%);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--gold), #d98a0a);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-light);
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.3);
+  color: #fff;
+}
+
+@layer components {
+  /* Glassmorphism surface */
+  .glass {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+  }
+
+  .glass-strong {
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+  }
+
+  /* Golden gradient text */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #ffe585 0%, #f5a623 50%, #d98a0a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Golden button */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-semibold text-black transition-all duration-300;
+    background: linear-gradient(135deg, #ffd24d 0%, #f5a623 50%, #d98a0a 100%);
+    box-shadow: 0 6px 20px -6px rgba(245, 166, 35, 0.6);
+  }
+  .btn-gold:hover {
+    box-shadow: 0 10px 30px -6px rgba(245, 166, 35, 0.8);
+    transform: translateY(-1px);
+  }
+  .btn-gold:active {
+    transform: translateY(0);
+  }
+  .btn-gold:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-medium text-neutral-200 transition-all duration-300;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .btn-ghost:hover {
+    border-color: rgba(245, 166, 35, 0.5);
+    background: rgba(245, 166, 35, 0.08);
+    color: #fff;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 font-medium text-red-100 transition-all duration-300;
+    background: rgba(220, 38, 38, 0.15);
+    border: 1px solid rgba(220, 38, 38, 0.4);
+  }
+  .btn-danger:hover {
+    background: rgba(220, 38, 38, 0.3);
+  }
+
+  /* Inputs */
+  .field {
+    @apply w-full rounded-2xl px-4 py-3 text-sm text-neutral-100 outline-none transition-all duration-200;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .field::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .field:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .field-error {
+    border-color: rgba(220, 38, 38, 0.6) !important;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-neutral-400;
+  }
+
+  /* Card */
+  .card {
+    @apply rounded-3xl p-5 transition-all duration-300;
+    background: rgba(18, 18, 18, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.08) 37%,
+      rgba(255, 255, 255, 0.04) 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

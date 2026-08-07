@@ -1,0 +1,73 @@
+-- Migration 0001: Initial schema
+-- Source of truth is ../schema.sql — this file is identical so that
+-- migration tools / wrangler can apply migrations one at a time.
+-- ----------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS admins (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  username      TEXT    NOT NULL UNIQUE,
+  password_hash TEXT    NOT NULL,
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  name         TEXT    NOT NULL,
+  slug         TEXT    NOT NULL UNIQUE,
+  icon         TEXT    NOT NULL DEFAULT '',
+  order_number INTEGER NOT NULL DEFAULT 0,
+  is_visible   INTEGER NOT NULL DEFAULT 1,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_categories_order ON categories (order_number);
+CREATE INDEX IF NOT EXISTS idx_categories_visible ON categories (is_visible);
+
+CREATE TABLE IF NOT EXISTS videos (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  title            TEXT    NOT NULL,
+  description      TEXT    NOT NULL DEFAULT '',
+  thumbnail_url    TEXT    NOT NULL,
+  google_drive_url TEXT    NOT NULL,
+  tags             TEXT    NOT NULL DEFAULT '',
+  upload_time      TEXT    NOT NULL DEFAULT (datetime('now')),
+  category_id      INTEGER,
+  featured         INTEGER NOT NULL DEFAULT 0,
+  created_at       TEXT    NOT NULL DEFAULT (datetime('now')),
+  updated_at       TEXT    NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE SET NULL
+);
+CREATE INDEX IF NOT EXISTS idx_videos_category ON videos (category_id);
+CREATE INDEX IF NOT EXISTS idx_videos_featured ON videos (featured);
+CREATE INDEX IF NOT EXISTS idx_videos_created ON videos (created_at);
+
+CREATE TABLE IF NOT EXISTS slides (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  image_url    TEXT    NOT NULL,
+  title        TEXT    NOT NULL DEFAULT '',
+  subtitle     TEXT    NOT NULL DEFAULT '',
+  button_text  TEXT    NOT NULL DEFAULT '',
+  button_link  TEXT    NOT NULL DEFAULT '',
+  order_number INTEGER NOT NULL DEFAULT 0,
+  active       INTEGER NOT NULL DEFAULT 1,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_slides_order ON slides (order_number);
+
+CREATE TABLE IF NOT EXISTS settings (
+  id                     INTEGER PRIMARY KEY CHECK (id = 1),
+  website_name           TEXT    NOT NULL DEFAULT 'Mihad Free Video',
+  logo_url               TEXT    NOT NULL DEFAULT '',
+  favicon_url            TEXT    NOT NULL DEFAULT '',
+  footer_text            TEXT    NOT NULL DEFAULT '© Mihad Free Video. All rights reserved.',
+  primary_color          TEXT    NOT NULL DEFAULT '#f5a623',
+  secondary_color        TEXT    NOT NULL DEFAULT '#0a0a0a',
+  enable_pwa             INTEGER NOT NULL DEFAULT 1,
+  enable_ads             INTEGER NOT NULL DEFAULT 1,
+  adsense_header         TEXT    NOT NULL DEFAULT '',
+  adsense_between_cards  TEXT    NOT NULL DEFAULT '',
+  adsense_details        TEXT    NOT NULL DEFAULT '',
+  adsense_footer         TEXT    NOT NULL DEFAULT '',
+  adsense_client         TEXT    NOT NULL DEFAULT '',
+  updated_at             TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+INSERT OR IGNORE INTO settings (id) VALUES (1);
