@@ -103,6 +103,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable} dark`}>
       <head>
+        <meta name="monetag" content="f622def877abebe418e5d809d67d9c50" />
         {adsenseClient && settings.enableAds && (
           <script
             async
