@@ -4,6 +4,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
+import AdScripts from "@/components/site/AdScripts";
 import { getSettingsSafe } from "@/lib/safe";
 import { siteUrl, siteName } from "@/lib/utils";
 import "@/styles/globals.css";
@@ -104,18 +105,6 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${poppins.variable} dark`}>
       <head>
         <meta name="monetag" content="f622def877abebe418e5d809d67d9c50" />
-        {/* Ad code #2 */}
-        <script
-          src="https://5gvci.com/act/files/tag.min.js?z=11550589"
-          data-cfasync="false"
-          async
-        />
-        {/* Ad code #3 */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(s){s.dataset.zone='11550590',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
-          }}
-        />
         {adsenseClient && settings.enableAds && (
           <script
             async
@@ -149,6 +138,8 @@ export default async function RootLayout({
             {children}
             <InstallPrompt />
             <ServiceWorkerRegister />
+            {/* Loads ad scripts only on public pages, never on /admin */}
+            <AdScripts />
           </ToastProvider>
         </SettingsProvider>
       </body>

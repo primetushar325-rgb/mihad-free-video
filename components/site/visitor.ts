@@ -31,3 +31,37 @@ function randomId(): string {
     Date.now().toString(36)
   );
 }
+
+/**
+ * Fire-and-forget download event to /api/track/download.
+ * Uses navigator.sendBeacon when available (most reliable — the
+ * request is guaranteed to reach the server even as a tab closes
+ * or the page navigates). Falls back to fetch with keepalive.
+ */
+export function sendDownloadEvent(videoId: number, videoTitle: string): void {
+  const payload = JSON.stringify({
+    visitorId: getVisitorId(),
+    videoId,
+    videoTitle: videoTitle || "",
+  });
+
+  try {
+    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: "application/json" });
+      if (navigator.sendBeacon("/api/track/download", blob)) return;
+    }
+  } catch {
+    /* fall through to fetch */
+  }
+
+  try {
+    fetch("/api/track/download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
