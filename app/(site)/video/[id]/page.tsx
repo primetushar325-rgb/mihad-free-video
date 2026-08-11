@@ -149,6 +149,7 @@ export default async function VideoDetailsPage({
             <DownloadButton
               videoId={video.id}
               downloadUrl={video.googleDriveUrl}
+              videoTitle={video.title}
             />
             <ShareButton title={video.title} />
           </div>

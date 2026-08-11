@@ -14,6 +14,7 @@
 
 import { useState } from "react";
 import { Download } from "lucide-react";
+import { getVisitorId } from "./visitor";
 
 // The ad link you gave — opens once before the download.
 const AD_URL = "https://omg10.com/4/11550591";
@@ -24,9 +25,11 @@ const keyFor = (id: number) => `mhv_dl_ad_${id}`;
 export default function DownloadButton({
   videoId,
   downloadUrl,
+  videoTitle,
 }: {
   videoId: number;
   downloadUrl: string;
+  videoTitle?: string;
 }) {
   const [wasClicked, setWasClicked] = useState<boolean | null>(null);
 
@@ -58,6 +61,22 @@ export default function DownloadButton({
 
     // Second visit (back button): open the real download.
     window.open(downloadUrl, "_blank", "noopener,noreferrer");
+
+    // Record the download for admin analytics (best-effort).
+    try {
+      fetch("/api/track/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          visitorId: getVisitorId(),
+          videoId,
+          videoTitle: videoTitle || "",
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      /* ignore */
+    }
   }
 
   return (

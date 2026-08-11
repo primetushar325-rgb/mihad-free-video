@@ -682,6 +682,99 @@ function settingsKeyToColumn(key: keyof SettingsInput): string {
 }
 
 // ============================================================
+// ANALYTICS (visits + downloads)
+// ============================================================
+export interface VisitRow {
+  id: number;
+  visitor_id: string;
+  page_path: string;
+  referrer: string;
+  created_at: string;
+}
+export interface DownloadRow {
+  id: number;
+  visitor_id: string;
+  video_id: number;
+  video_title: string;
+  created_at: string;
+}
+
+/** Record a page visit. Returns the new row id. */
+export async function trackVisit(input: {
+  visitorId?: string;
+  pagePath?: string;
+  referrer?: string;
+}): Promise<number> {
+  return insertAndReturnId(
+    `INSERT INTO visits (visitor_id, page_path, referrer)
+     VALUES (?, ?, ?)`,
+    [
+      input.visitorId?.slice(0, 200) ?? "",
+      input.pagePath?.slice(0, 500) ?? "",
+      input.referrer?.slice(0, 500) ?? "",
+    ]
+  );
+}
+
+/** Record a video download. */
+export async function trackDownload(input: {
+  visitorId?: string;
+  videoId: number;
+  videoTitle?: string;
+}): Promise<number> {
+  return insertAndReturnId(
+    `INSERT INTO downloads (visitor_id, video_id, video_title)
+     VALUES (?, ?, ?)`,
+    [
+      input.visitorId?.slice(0, 200) ?? "",
+      input.videoId,
+      input.videoTitle?.slice(0, 300) ?? "",
+    ]
+  );
+}
+
+/** Today's date as the local "YYYY-MM-DD" prefix D1 stores (UTC). */
+function todayPrefix(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function getAnalyticsSummary() {
+  const [totalVisits, uniqueVisitors, todayVisits, totalDownloads, topDownloads] =
+    await Promise.all([
+      query<{ c: number }>("SELECT COUNT(*) AS c FROM visits"),
+      query<{ c: number }>(
+        "SELECT COUNT(DISTINCT visitor_id) AS c FROM visits WHERE visitor_id != ''"
+      ),
+      query<{ c: number }>(
+        "SELECT COUNT(*) AS c FROM visits WHERE created_at >= ?",
+        [`${todayPrefix()} 00:00:00`]
+      ),
+      query<{ c: number }>("SELECT COUNT(*) AS c FROM downloads"),
+      query<DownloadRow>(
+        `SELECT video_id, video_title, COUNT(*) AS c
+         FROM downloads
+         GROUP BY video_id, video_title
+         ORDER BY c DESC
+         LIMIT 10`
+      ),
+    ]);
+
+  return {
+    totalVisits: totalVisits[0]?.c ?? 0,
+    uniqueVisitors: uniqueVisitors[0]?.c ?? 0,
+    todayVisits: todayVisits[0]?.c ?? 0,
+    totalDownloads: totalDownloads[0]?.c ?? 0,
+    topDownloads: (topDownloads as Array<DownloadRow & { c: number }>).map(
+      (r) => ({
+        videoId: r.video_id,
+        videoTitle: r.video_title,
+        count: r.c,
+      })
+    ),
+  };
+}
+
+// ============================================================
 // DASHBOARD
 // ============================================================
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -701,6 +794,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     ),
   ]);
 
+  const analytics = await getAnalyticsSummary();
   return {
     totalVideos: videos[0]?.c ?? 0,
     totalCategories: cats[0]?.c ?? 0,
@@ -708,6 +802,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalSlides: slides[0]?.c ?? 0,
     totalAdmins: admins[0]?.c ?? 0,
     recentVideos: recent.map(mapVideoWithCategory),
+    ...analytics,
   };
 }
 

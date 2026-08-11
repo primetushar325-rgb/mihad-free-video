@@ -16,6 +16,9 @@ import {
   ArrowRight,
   Settings,
   Megaphone,
+  Eye,
+  Download,
+  Users,
 } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/Toast";
@@ -51,11 +54,18 @@ export default function DashboardPage() {
     );
   }
 
-  const cards = [
+  const libraryCards = [
     { label: "Total Videos", value: stats.totalVideos, icon: Film, color: "text-gold-400" },
     { label: "Categories", value: stats.totalCategories, icon: FolderTree, color: "text-sky-400" },
     { label: "Featured", value: stats.totalFeatured, icon: Star, color: "text-amber-400" },
     { label: "Slides", value: stats.totalSlides, icon: Images, color: "text-emerald-400" },
+  ];
+
+  const trafficCards = [
+    { label: "Total Visits", value: stats.totalVisits, icon: Eye, color: "text-sky-400" },
+    { label: "Unique Visitors", value: stats.uniqueVisitors, icon: Users, color: "text-violet-400" },
+    { label: "Visits Today", value: stats.todayVisits, icon: Eye, color: "text-emerald-400" },
+    { label: "Total Downloads", value: stats.totalDownloads, icon: Download, color: "text-amber-400" },
   ];
 
   return (
@@ -65,9 +75,9 @@ export default function DashboardPage() {
         subtitle="Overview of your video library"
       />
 
-      {/* Stat cards */}
+      {/* Library stat cards */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {cards.map((c) => {
+        {libraryCards.map((c) => {
           const Icon = c.icon;
           return (
             <div key={c.label} className="card">
@@ -81,6 +91,63 @@ export default function DashboardPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Visitor & download stats */}
+      <h2 className="mb-3 mt-6 font-display text-lg font-bold text-white">
+        Visitors & Downloads
+      </h2>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {trafficCards.map((c) => {
+          const Icon = c.icon;
+          return (
+            <div key={c.label} className="card border-gold-500/20">
+              <div className={`mb-3 inline-flex rounded-xl bg-white/5 p-2.5 ${c.color}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="font-display text-3xl font-extrabold text-white">
+                {c.value}
+              </p>
+              <p className="text-xs text-neutral-400">{c.label}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Top downloaded videos */}
+      <div className="mt-6">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold text-white">
+            Most Downloaded Videos
+          </h2>
+        </div>
+        {stats.topDownloads.length === 0 ? (
+          <div className="card text-center text-sm text-neutral-400">
+            No downloads recorded yet. Downloads will appear here once visitors start downloading.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {stats.topDownloads.map((d, i) => (
+              <div
+                key={d.videoId}
+                className="flex items-center gap-3 rounded-2xl border border-white/8 bg-black/40 p-2.5"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gold-gradient text-xs font-black text-black">
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-white">
+                    {d.videoTitle || `Video #${d.videoId}`}
+                  </p>
+                  <p className="text-xs text-neutral-400">Video #{d.videoId}</p>
+                </div>
+                <span className="badge bg-white/5 text-gold-300">
+                  <Download className="h-3 w-3" /> {d.count}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Quick actions */}

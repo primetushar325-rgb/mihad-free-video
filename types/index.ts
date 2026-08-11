@@ -67,6 +67,12 @@ export interface Settings {
   adsenseClient: string;
 }
 
+export interface DownloadStat {
+  videoId: number;
+  videoTitle: string;
+  count: number;
+}
+
 export interface DashboardStats {
   totalVideos: number;
   totalCategories: number;
@@ -74,6 +80,12 @@ export interface DashboardStats {
   totalSlides: number;
   totalAdmins: number;
   recentVideos: VideoWithCategory[];
+  // Analytics
+  totalVisits: number;
+  uniqueVisitors: number;
+  todayVisits: number;
+  totalDownloads: number;
+  topDownloads: DownloadStat[];
 }
 
 // ------------------------------------------------------------
