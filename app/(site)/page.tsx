@@ -5,6 +5,7 @@
 // ============================================================
 
 import HeroSlider from "@/components/site/HeroSlider";
+import ViralOrderBanner from "@/components/site/ViralOrderBanner";
 import HomeBrowser from "@/components/site/HomeBrowser";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import {
@@ -57,6 +58,11 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Viral order banner — always on top, opens the order link */}
+      <div className="pt-3">
+        <ViralOrderBanner />
+      </div>
+
       {/* Hero: real slider if configured, otherwise a branded welcome banner */}
       {slides.length > 0 ? (
         <section className="mx-auto max-w-7xl px-3 pt-4 sm:px-5">

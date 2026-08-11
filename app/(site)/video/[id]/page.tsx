@@ -12,6 +12,7 @@ import { Clock, Tag, ChevronLeft, Folder } from "lucide-react";
 import VideoGrid from "@/components/site/VideoGrid";
 import AdSlot from "@/components/site/AdSlot";
 import DownloadButton from "@/components/site/DownloadButton";
+import ViralOrderBanner from "@/components/site/ViralOrderBanner";
 import ShareButton from "@/components/site/ShareButton";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getVideoByIdSafe, getRelatedSafe } from "@/lib/safe";
@@ -75,6 +76,8 @@ export default async function VideoDetailsPage({
 
   return (
     <article className="mx-auto max-w-5xl px-3 py-5 sm:px-5">
+      <ViralOrderBanner />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(videoLd) }}
