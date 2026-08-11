@@ -104,7 +104,24 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${poppins.variable} dark`}>
       <head>
         <meta name="monetag" content="f622def877abebe418e5d809d67d9c50" />
-        <script src="https://quge5.com/88/tag.min.js" data-zone="267792" async data-cfasync="false"></script>
+        {/* Ad code #1 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='11550583',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+          }}
+        />
+        {/* Ad code #2 */}
+        <script
+          src="https://5gvci.com/act/files/tag.min.js?z=11550589"
+          data-cfasync="false"
+          async
+        />
+        {/* Ad code #3 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='11550590',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+          }}
+        />
         {adsenseClient && settings.enableAds && (
           <script
             async
@@ -133,6 +150,13 @@ export default async function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
+        {/* Ad code #4 (direct link) */}
+        <iframe
+          src="https://omg10.com/4/11550591"
+          style={{ width: "100%", border: 0, display: "block" }}
+          aria-hidden="true"
+          tabIndex={-1}
+        />
         <SettingsProvider settings={settings}>
           <ToastProvider>
             {children}

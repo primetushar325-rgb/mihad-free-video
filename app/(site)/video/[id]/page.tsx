@@ -8,9 +8,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Download, Clock, Tag, ChevronLeft, Folder } from "lucide-react";
+import { Clock, Tag, ChevronLeft, Folder } from "lucide-react";
 import VideoGrid from "@/components/site/VideoGrid";
 import AdSlot from "@/components/site/AdSlot";
+import DownloadButton from "@/components/site/DownloadButton";
 import ShareButton from "@/components/site/ShareButton";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getVideoByIdSafe, getRelatedSafe } from "@/lib/safe";
@@ -142,14 +143,10 @@ export default async function VideoDetailsPage({
 
           {/* Download */}
           <div className="mt-6 flex flex-wrap gap-2">
-            <a
-              href={video.googleDriveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-gold w-full sm:w-auto"
-            >
-              <Download className="h-5 w-5" /> Download Video
-            </a>
+            <DownloadButton
+              videoId={video.id}
+              downloadUrl={video.googleDriveUrl}
+            />
             <ShareButton title={video.title} />
           </div>
 
