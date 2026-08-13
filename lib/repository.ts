@@ -810,3 +810,168 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 // Helpers
 // ============================================================
 export { slugify };
+
+// ============================================================
+// PUSH NOTIFICATIONS
+// ============================================================
+export interface PushSubRow {
+  id: number;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  prefs: string;
+  device: string;
+  created_at: string;
+  last_active: string;
+}
+export interface NotificationRow {
+  id: number;
+  title: string;
+  message: string;
+  icon: string;
+  image: string;
+  url: string;
+  target: string;
+  status: string;
+  sent_count: number;
+  delivered_count: number;
+  click_count: number;
+  event_id: string | null;
+  schedule_at: string | null;
+  created_at: string;
+  sent_at: string | null;
+}
+export interface NotifSettingsRow {
+  id: number;
+  global_enabled: number;
+  new_videos: number;
+  new_tools: number;
+  new_templates: number;
+  new_updates: number;
+  announcements: number;
+  sound: number;
+  default_icon: string;
+  default_url: string;
+}
+
+export async function savePushSub(input: {
+  subscription: { endpoint: string; keys?: { p256dh?: string; auth?: string } };
+  prefs?: Record<string, unknown>;
+  device?: string;
+}): Promise<void> {
+  const endpoint = input.subscription.endpoint;
+  const p256dh = input.subscription.keys?.p256dh ?? "";
+  const auth = input.subscription.keys?.auth ?? "";
+  if (!endpoint || !p256dh || !auth) throw new Error("Invalid subscription");
+  await execute(
+    `INSERT INTO push_subs (endpoint, p256dh, auth, prefs, device, last_active)
+     VALUES (?, ?, ?, ?, ?, datetime('now'))
+     ON CONFLICT(endpoint) DO UPDATE SET
+       prefs=excluded.prefs, device=excluded.device, last_active=datetime('now')`,
+    [endpoint, p256dh, auth, JSON.stringify(input.prefs ?? {}), input.device ?? ""]
+  );
+}
+
+export async function listPushSubs(): Promise<PushSubRow[]> {
+  return query<PushSubRow>("SELECT * FROM push_subs ORDER BY created_at DESC");
+}
+
+export async function updatePushPrefs(
+  endpoint: string,
+  prefs: Record<string, unknown>
+): Promise<void> {
+  await execute(
+    "UPDATE push_subs SET prefs = ?, last_active = datetime('now') WHERE endpoint = ?",
+    [JSON.stringify(prefs ?? {}), endpoint]
+  );
+}
+
+export async function createNotification(input: {
+  title: string;
+  message: string;
+  icon?: string;
+  image?: string;
+  url?: string;
+  target?: string;
+  status?: string;
+  eventId?: string;
+  scheduleAt?: string;
+}): Promise<number> {
+  const id = await insertAndReturnId(
+    `INSERT INTO notifications
+      (title, message, icon, image, url, target, status, event_id, schedule_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      input.title || "Notification",
+      input.message || "",
+      input.icon || "",
+      input.image || "",
+      input.url || "/",
+      input.target || "all",
+      input.status || "sent",
+      input.eventId || null,
+      input.scheduleAt || null,
+    ]
+  );
+  return id;
+}
+
+export async function listNotifications(limit = 100): Promise<NotificationRow[]> {
+  return query<NotificationRow>(
+    "SELECT * FROM notifications ORDER BY id DESC LIMIT ?",
+    [limit]
+  );
+}
+
+export async function notifExists(eventId?: string): Promise<boolean> {
+  if (!eventId) return false;
+  const rows = await query<{ id: number }>(
+    "SELECT id FROM notifications WHERE event_id = ? LIMIT 1",
+    [eventId]
+  );
+  return rows.length > 0;
+}
+
+export async function updateNotificationStatus(
+  id: number,
+  status: string,
+  sentCount?: number
+): Promise<void> {
+  await execute(
+    "UPDATE notifications SET status = ?, sent_count = ?, sent_at = datetime('now') WHERE id = ?",
+    [status, sentCount ?? 0, id]
+  );
+}
+
+export async function getNotifSettings(): Promise<NotifSettingsRow> {
+  const rows = await query<NotifSettingsRow>(
+    "SELECT * FROM notif_settings WHERE id = 1 LIMIT 1"
+  );
+  if (!rows[0]) {
+    return {
+      id: 1, global_enabled: 1, new_videos: 1, new_tools: 1, new_templates: 1,
+      new_updates: 1, announcements: 1, sound: 1,
+      default_icon: "/icons/icon-192.png", default_url: "/",
+    };
+  }
+  return rows[0];
+}
+
+export async function updateNotifSettings(
+  input: Record<string, unknown>
+): Promise<void> {
+  const allowed = [
+    "global_enabled", "new_videos", "new_tools", "new_templates",
+    "new_updates", "announcements", "sound", "default_icon", "default_url",
+  ];
+  const fields: string[] = [];
+  const params: unknown[] = [];
+  for (const k of allowed) {
+    if (input[k] !== undefined) {
+      fields.push(`${k} = ?`);
+      params.push(input[k]);
+    }
+  }
+  if (fields.length === 0) return;
+  await execute(`UPDATE notif_settings SET ${fields.join(", ")} WHERE id = 1`, params);
+}

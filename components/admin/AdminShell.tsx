@@ -15,6 +15,7 @@ import {
   FolderTree,
   Images,
   Megaphone,
+  Bell,
   Settings as SettingsIcon,
   LogOut,
   Menu,
@@ -32,6 +33,7 @@ const NAV = [
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/slides", label: "Slider", icon: Images },
   { href: "/admin/ads", label: "Ads", icon: Megaphone },
+  { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/settings", label: "Settings", icon: SettingsIcon },
 ];
 

@@ -4,6 +4,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
+import NotificationSystem from "@/components/pwa/NotificationSystem";
 import AdScripts from "@/components/site/AdScripts";
 import { getSettingsSafe } from "@/lib/safe";
 import { siteUrl, siteName } from "@/lib/utils";
@@ -138,6 +139,7 @@ export default async function RootLayout({
             {children}
             <InstallPrompt />
             <ServiceWorkerRegister />
+            <NotificationSystem />
             {/* Loads ad scripts only on public pages, never on /admin */}
             <AdScripts />
           </ToastProvider>
