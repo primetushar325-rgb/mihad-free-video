@@ -195,3 +195,51 @@ export function validateLogin(body: unknown): {
 export function toBool(v: unknown): boolean {
   return v === true || v === 1 || v === "1" || v === "true";
 }
+
+export function validateGiveaway(body: unknown): {
+  errors: Errors;
+  value: import("@/types").GiveawayInput;
+} {
+  const b = (body ?? {}) as Record<string, unknown>;
+  const errors: Errors = {};
+  const value: import("@/types").GiveawayInput = {};
+  if (b.enabled !== undefined) value.enabled = toBool(b.enabled);
+  if (b.floatingButtonEnabled !== undefined)
+    value.floatingButtonEnabled = toBool(b.floatingButtonEnabled);
+  if (b.title !== undefined) value.title = sanitizeText(String(b.title), 120);
+  if (b.description !== undefined)
+    value.description = sanitizeText(String(b.description), 800);
+  if (b.subscriberCount !== undefined) {
+    const count = Number(b.subscriberCount);
+    if (!Number.isInteger(count) || count < 0 || count > 1000000000)
+      errors.subscriberCount = "Subscriber count must be a positive whole number.";
+    else value.subscriberCount = count;
+  }
+  for (const [source, target] of [
+    ["youtubeUrl", "youtubeUrl"],
+    ["facebookUrl", "facebookUrl"],
+    ["telegramUrl", "telegramUrl"],
+  ] as const) {
+    if (b[source] !== undefined) {
+      const url = String(b[source]).trim();
+      if (url && !isValidUrl(url)) errors[source] = "Enter a valid http(s) URL.";
+      else value[target] = url;
+    }
+  }
+  for (const key of ["startTime", "endTime"] as const) {
+    if (b[key] === undefined) continue;
+    const raw = b[key] === null || b[key] === "" ? null : String(b[key]);
+    if (raw && Number.isNaN(Date.parse(raw))) errors[key] = "Enter a valid date and time.";
+    else value[key] = raw ? new Date(raw).toISOString() : null;
+  }
+  if (value.startTime && value.endTime && Date.parse(value.endTime) <= Date.parse(value.startTime))
+    errors.endTime = "End time must be after start time.";
+  if (b.buttonPosition !== undefined) {
+    if (b.buttonPosition !== "bottom-right" && b.buttonPosition !== "bottom-left")
+      errors.buttonPosition = "Invalid button position.";
+    else value.buttonPosition = b.buttonPosition;
+  }
+  if (value.enabled && !value.endTime)
+    errors.endTime = "An end time is required when the giveaway is enabled.";
+  return { errors, value };
+}

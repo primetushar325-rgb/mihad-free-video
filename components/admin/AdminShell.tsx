@@ -16,6 +16,7 @@ import {
   Images,
   Megaphone,
   Bell,
+  Gift,
   Settings as SettingsIcon,
   LogOut,
   Menu,
@@ -34,6 +35,7 @@ const NAV = [
   { href: "/admin/slides", label: "Slider", icon: Images },
   { href: "/admin/ads", label: "Ads", icon: Megaphone },
   { href: "/admin/notifications", label: "Notifications", icon: Bell },
+  { href: "/admin/giveaway", label: "Giveaway", icon: Gift },
   { href: "/admin/settings", label: "Settings", icon: SettingsIcon },
 ];
 

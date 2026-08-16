@@ -17,6 +17,8 @@ import type {
   SlideInput,
   SettingsInput,
   Admin,
+  GiveawaySettings,
+  GiveawayInput,
 } from "@/types";
 
 // ------------------------------------------------------------
@@ -974,4 +976,168 @@ export async function updateNotifSettings(
   }
   if (fields.length === 0) return;
   await execute(`UPDATE notif_settings SET ${fields.join(", ")} WHERE id = 1`, params);
+}
+
+
+// ============================================================
+// GIVEAWAY
+// ============================================================
+interface GiveawayRow {
+  id: number;
+  enabled: number;
+  floating_button_enabled: number;
+  title: string;
+  subscriber_count: number;
+  youtube_url: string;
+  facebook_url: string;
+  telegram_url: string;
+  description: string;
+  start_time: string | null;
+  end_time: string | null;
+  button_position: string;
+  giveaway_version: number;
+  updated_at: string;
+}
+
+let giveawaySchemaPromise: Promise<void> | null = null;
+
+/**
+ * Existing deployments may not run migrations automatically. Initialize this
+ * isolated module once per server instance with idempotent DDL, then use the
+ * normal repository methods. No user input is included in these statements.
+ */
+async function ensureGiveawaySchema(): Promise<void> {
+  if (!giveawaySchemaPromise) {
+    giveawaySchemaPromise = (async () => {
+      await execute(`CREATE TABLE IF NOT EXISTS giveaway_settings (
+        id INTEGER PRIMARY KEY CHECK (id = 1), enabled INTEGER NOT NULL DEFAULT 0,
+        floating_button_enabled INTEGER NOT NULL DEFAULT 1,
+        title TEXT NOT NULL DEFAULT 'YouTube Channel Giveaway',
+        subscriber_count INTEGER NOT NULL DEFAULT 7056,
+        youtube_url TEXT NOT NULL DEFAULT '', facebook_url TEXT NOT NULL DEFAULT '',
+        telegram_url TEXT NOT NULL DEFAULT '',
+        description TEXT NOT NULL DEFAULT 'Win a YouTube Channel!',
+        start_time TEXT, end_time TEXT,
+        button_position TEXT NOT NULL DEFAULT 'bottom-right',
+        giveaway_version INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )`);
+      await execute("INSERT OR IGNORE INTO giveaway_settings (id) VALUES (1)");
+      await execute(`CREATE TABLE IF NOT EXISTS giveaway_participants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, giveaway_version INTEGER NOT NULL,
+        visitor_id TEXT NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL DEFAULT '',
+        facebook_completed INTEGER NOT NULL DEFAULT 0,
+        telegram_completed INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (giveaway_version, visitor_id)
+      )`);
+      await execute("CREATE INDEX IF NOT EXISTS idx_giveaway_participants_version ON giveaway_participants (giveaway_version, created_at)");
+    })().catch((error) => {
+      giveawaySchemaPromise = null;
+      throw error;
+    });
+  }
+  return giveawaySchemaPromise;
+}
+
+const DEFAULT_GIVEAWAY: GiveawaySettings = {
+  id: 1,
+  enabled: false,
+  floatingButtonEnabled: true,
+  title: "YouTube Channel Giveaway",
+  subscriberCount: 7056,
+  youtubeUrl: "",
+  facebookUrl: "",
+  telegramUrl: "",
+  description: "Win a YouTube Channel!",
+  startTime: null,
+  endTime: null,
+  buttonPosition: "bottom-right",
+  giveawayVersion: 1,
+  updatedAt: "",
+};
+
+function mapGiveaway(r: GiveawayRow): GiveawaySettings {
+  return {
+    id: r.id,
+    enabled: toBool(r.enabled),
+    floatingButtonEnabled: toBool(r.floating_button_enabled),
+    title: r.title,
+    subscriberCount: Number(r.subscriber_count) || 0,
+    youtubeUrl: r.youtube_url || "",
+    facebookUrl: r.facebook_url || "",
+    telegramUrl: r.telegram_url || "",
+    description: r.description || "",
+    startTime: r.start_time || null,
+    endTime: r.end_time || null,
+    buttonPosition: r.button_position === "bottom-left" ? "bottom-left" : "bottom-right",
+    giveawayVersion: Number(r.giveaway_version) || 1,
+    updatedAt: r.updated_at || "",
+  };
+}
+
+export async function getGiveawaySettings(): Promise<GiveawaySettings> {
+  await ensureGiveawaySchema();
+  const rows = await query<GiveawayRow>(
+    "SELECT * FROM giveaway_settings WHERE id = 1 LIMIT 1"
+  );
+  return rows[0] ? mapGiveaway(rows[0]) : DEFAULT_GIVEAWAY;
+}
+
+export async function updateGiveawaySettings(input: GiveawayInput): Promise<void> {
+  await ensureGiveawaySchema();
+  const existing = input.endTime !== undefined ? await getGiveawaySettings() : null;
+  const map: Record<keyof GiveawayInput, string> = {
+    enabled: "enabled",
+    floatingButtonEnabled: "floating_button_enabled",
+    title: "title",
+    subscriberCount: "subscriber_count",
+    youtubeUrl: "youtube_url",
+    facebookUrl: "facebook_url",
+    telegramUrl: "telegram_url",
+    description: "description",
+    startTime: "start_time",
+    endTime: "end_time",
+    buttonPosition: "button_position",
+  };
+  const fields: string[] = [];
+  const params: unknown[] = [];
+  for (const key of Object.keys(map) as Array<keyof GiveawayInput>) {
+    if (input[key] === undefined) continue;
+    fields.push(`${map[key]} = ?`);
+    const value = input[key];
+    params.push(typeof value === "boolean" ? (value ? 1 : 0) : value);
+  }
+  if (!fields.length) return;
+  // Only a changed end time identifies a new giveaway and permits fresh entries.
+  if (input.endTime !== undefined && input.endTime !== existing?.endTime)
+    fields.push("giveaway_version = giveaway_version + 1");
+  fields.push("updated_at = datetime('now')");
+  await execute(`UPDATE giveaway_settings SET ${fields.join(", ")} WHERE id = 1`, params);
+}
+
+export async function createGiveawayParticipant(input: {
+  giveawayVersion: number;
+  visitorId: string;
+  name: string;
+  email?: string;
+  facebookCompleted: boolean;
+  telegramCompleted: boolean;
+}): Promise<number> {
+  await ensureGiveawaySchema();
+  return insertAndReturnId(
+    `INSERT INTO giveaway_participants
+      (giveaway_version, visitor_id, name, email, facebook_completed, telegram_completed)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [input.giveawayVersion, input.visitorId, input.name, input.email || "",
+      input.facebookCompleted ? 1 : 0, input.telegramCompleted ? 1 : 0]
+  );
+}
+
+export async function countGiveawayParticipants(version: number): Promise<number> {
+  await ensureGiveawaySchema();
+  const rows = await query<{ c: number }>(
+    "SELECT COUNT(*) AS c FROM giveaway_participants WHERE giveaway_version = ?", [version]
+  );
+  return rows[0]?.c ?? 0;
 }

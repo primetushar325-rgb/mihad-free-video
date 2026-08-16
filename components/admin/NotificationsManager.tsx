@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useEffect, useState, useCallback } from "react";
-import { Bell, Send, Clock, RotateCcw } from "lucide-react";
+import { Send, Clock, RotateCcw } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/Toast";
 import PageHeader from "@/components/admin/PageHeader";

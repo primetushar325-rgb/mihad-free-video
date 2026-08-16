@@ -153,3 +153,40 @@ export interface SettingsInput {
   adsenseFooter?: string;
   adsenseClient?: string;
 }
+
+
+// ------------------------------------------------------------
+// Giveaway module
+// ------------------------------------------------------------
+export type GiveawayButtonPosition = "bottom-right" | "bottom-left";
+
+export interface GiveawaySettings {
+  id: number;
+  enabled: boolean;
+  floatingButtonEnabled: boolean;
+  title: string;
+  subscriberCount: number;
+  youtubeUrl: string;
+  facebookUrl: string;
+  telegramUrl: string;
+  description: string;
+  startTime: string | null;
+  endTime: string | null;
+  buttonPosition: GiveawayButtonPosition;
+  giveawayVersion: number;
+  updatedAt: string;
+}
+
+export interface GiveawayInput {
+  enabled?: boolean;
+  floatingButtonEnabled?: boolean;
+  title?: string;
+  subscriberCount?: number;
+  youtubeUrl?: string;
+  facebookUrl?: string;
+  telegramUrl?: string;
+  description?: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  buttonPosition?: GiveawayButtonPosition;
+}

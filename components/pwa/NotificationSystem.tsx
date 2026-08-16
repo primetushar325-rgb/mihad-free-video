@@ -136,7 +136,7 @@ export default function NotificationSystem() {
       {subscribed && (
         <button
           onClick={() => setSettingsOpen(true)}
-          className="glass fixed bottom-20 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-2xl border border-gold-500/30 text-gold-300"
+          className="glass fixed bottom-32 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-2xl border border-gold-500/30 text-gold-300"
           aria-label="Notification settings"
           title="Notification settings"
         >
