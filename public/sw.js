@@ -1,7 +1,6 @@
 /* Mihad Free Video — first-party PWA service worker */
-const VERSION = "mihad-pwa-v3";
+const VERSION = "mihad-pwa-v4";
 const STATIC_CACHE = `${VERSION}-static`;
-const PAGE_CACHE = `${VERSION}-pages`;
 const APP_SHELL = [
   "/",
   "/offline.html",
@@ -34,10 +33,7 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          if (response.ok) caches.open(PAGE_CACHE).then((cache) => cache.put(request, response.clone()));
-          return response;
-        })
+        .then((response) => response)
         .catch(async () => (await caches.match(request)) || (await caches.match("/offline.html")))
     );
     return;

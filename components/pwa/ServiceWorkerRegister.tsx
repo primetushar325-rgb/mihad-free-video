@@ -8,7 +8,6 @@ export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (!settings.enablePwa || !("serviceWorker" in navigator) || process.env.NODE_ENV !== "production") return;
     const register = () => navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" })
-      .then((registration) => registration.update())
       .catch((err) => console.warn("SW registration failed:", err));
     if (document.readyState === "complete") void register();
     else window.addEventListener("load", register, { once: true });

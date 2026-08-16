@@ -10,6 +10,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, BellOff, X } from "lucide-react";
+import { useScrollLock } from "@/components/useScrollLock";
 
 const NOTIF_DONE_KEY = "mihad_notif_done";
 const PREFS_KEY = "mihad_notif_prefs";
@@ -35,6 +36,8 @@ export default function NotificationSystem() {
   const [prefs, setPrefs] = useState({
     global: true, videos: true, tools: true, templates: true, updates: true, announcements: true,
   });
+
+  useScrollLock(settingsOpen);
 
   function supported() {
     return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
@@ -158,7 +161,7 @@ export default function NotificationSystem() {
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="glass-strong w-full max-w-sm rounded-3xl border border-gold-500/30 p-4 text-white"
+              className="glass-strong max-h-[90dvh] w-full max-w-sm touch-pan-y overflow-y-auto overscroll-contain rounded-3xl border border-gold-500/30 p-4 text-white"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold">Notification Settings</h3>

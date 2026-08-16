@@ -31,19 +31,17 @@ export default function ViralOrderBanner() {
         <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/30 blur-2xl" />
         <div className="pointer-events-none absolute -bottom-12 -right-6 h-44 w-44 rounded-full bg-yellow-200/40 blur-2xl" />
         {/* moving shine sweep */}
-        <div className="pointer-events-none absolute inset-0 -translate-x-full animate-[shine_2.5s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 hidden -translate-x-full animate-[shine_3.5s_ease-in-out_infinite] sm:block bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
         {/* icon */}
-        <motion.div
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        <div
           className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/95 shadow-xl"
         >
           <Flame className="h-9 w-9 text-orange-500" />
           <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[9px] font-black text-amber-400">
             100
           </span>
-        </motion.div>
+        </div>
 
         {/* text */}
         <div className="relative text-white">
@@ -59,15 +57,13 @@ export default function ViralOrderBanner() {
         </div>
 
         {/* CTA button */}
-        <motion.span
-          animate={{ scale: [1, 1.06, 1] }}
-          transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+        <span
           className="relative mt-1 inline-flex items-center gap-2 rounded-2xl bg-black px-6 py-3.5 text-sm font-black uppercase tracking-wide text-amber-300 shadow-2xl sm:mt-0 sm:px-7 sm:text-base"
         >
           <TrendingUp className="h-5 w-5" />
           Order Now
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </motion.span>
+        </span>
       </div>
     </motion.a>
   );

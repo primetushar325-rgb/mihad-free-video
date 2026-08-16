@@ -7,7 +7,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Star, Clock } from "lucide-react";
 import type { VideoWithCategory } from "@/types";
 import { timeAgo } from "@/lib/utils";
@@ -22,12 +21,8 @@ export default function VideoCard({
   const featured = video.featured;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.3) }}
-      className={featured ? "sm:col-span-2 sm:row-span-1" : ""}
+    <div
+      className={`content-auto ${featured ? "sm:col-span-2 sm:row-span-1" : ""}`}
     >
       <Link
         href={`/video/${video.id}`}
@@ -87,6 +82,6 @@ export default function VideoCard({
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

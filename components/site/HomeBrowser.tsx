@@ -6,7 +6,6 @@
 // ============================================================
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import CategoryNav, { type ActiveCategory } from "@/components/site/CategoryNav";
 import VideoGrid from "@/components/site/VideoGrid";
@@ -65,9 +64,9 @@ export default function HomeBrowser({
         onChange={setActive}
       />
 
-      <motion.div layout className="mt-5">
+      <div className="mt-5">
         <VideoGrid videos={filtered} showAds />
-      </motion.div>
+      </div>
     </section>
   );
 }

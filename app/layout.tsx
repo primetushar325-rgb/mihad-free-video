@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { SettingsProvider } from "@/components/SettingsProvider";
+import { PlatformSettingsProvider } from "@/components/PlatformSettingsProvider";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import NotificationSystem from "@/components/pwa/NotificationSystem";
@@ -135,14 +136,16 @@ export default async function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <SettingsProvider settings={settings}>
-          <ToastProvider>
-            {children}
-            <InstallPrompt />
-            <ServiceWorkerRegister />
-            <NotificationSystem />
-            {/* Loads ad scripts only on public pages, never on /admin */}
-            <AdScripts />
-          </ToastProvider>
+          <PlatformSettingsProvider>
+            <ToastProvider>
+              {children}
+              <InstallPrompt />
+              <ServiceWorkerRegister />
+              <NotificationSystem />
+              {/* Loads ad scripts only on public pages, never on /admin */}
+              <AdScripts />
+            </ToastProvider>
+          </PlatformSettingsProvider>
         </SettingsProvider>
       </body>
     </html>

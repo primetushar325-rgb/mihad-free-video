@@ -8,6 +8,7 @@ import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useScrollLock } from "@/components/useScrollLock";
 
 export default function Modal({
   open,
@@ -22,15 +23,13 @@ export default function Modal({
   children: ReactNode;
   size?: "sm" | "md" | "lg";
 }) {
+  useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   if (typeof document === "undefined") return null;
@@ -54,7 +53,7 @@ export default function Modal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`glass-strong relative z-10 max-h-[92vh] w-full ${maxW} overflow-y-auto rounded-t-3xl border border-gold-500/20 p-5 shadow-gold sm:rounded-3xl`}
+            className={`glass-strong relative z-10 max-h-[92dvh] w-full ${maxW} touch-pan-y overflow-y-auto overscroll-contain rounded-t-3xl border border-gold-500/20 p-5 shadow-gold sm:rounded-3xl`}
           >
             {title && (
               <div className="mb-4 flex items-center justify-between">

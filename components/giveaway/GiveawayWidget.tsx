@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Facebook, Gift, Send, X, Youtube } from "lucide-react";
 import { getVisitorId } from "@/components/site/visitor";
 import type { GiveawaySettings } from "@/types";
+import { useScrollLock } from "@/components/useScrollLock";
 
 function remaining(endTime: string | null) {
   const ms = endTime ? Math.max(0, Date.parse(endTime) - Date.now()) : 0;
@@ -51,16 +52,15 @@ export default function GiveawayWidget() {
     if (history.state?.giveawayModal) history.back();
   }, []);
 
+  useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     const onPop = () => setOpen(false);
     addEventListener("keydown", onKey);
     addEventListener("popstate", onPop);
     return () => {
-      document.body.style.overflow = previous;
       removeEventListener("keydown", onKey);
       removeEventListener("popstate", onPop);
     };
@@ -109,15 +109,13 @@ export default function GiveawayWidget() {
 
   return (
     <>
-      <div className={`fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] md:bottom-4 ${side} z-40 flex flex-col items-center gap-1.5`}>
+      <div className={`fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] md:bottom-4 ${side} z-40 flex pointer-events-none flex-col items-center gap-1.5`}>
         <div className="rounded-full border border-white/10 bg-black/85 px-2.5 py-1 font-mono text-[10px] font-bold text-white shadow-xl backdrop-blur">
           {time.total > 0 ? `${pad(time.days)}d ${pad(time.hours)}:${pad(time.minutes)}:${pad(time.seconds)}` : "GIVEAWAY ENDED"}
         </div>
         <motion.button
           type="button" onClick={showModal} whileTap={{ scale: 0.92 }}
-          animate={active ? { y: [0, -4, 0] } : undefined}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="relative flex h-16 w-16 items-center justify-center rounded-[22px] border border-amber-200/60 bg-gradient-to-br from-yellow-300 via-amber-500 to-red-600 text-black shadow-[0_12px_35px_rgba(245,166,35,.45)]"
+          className="pointer-events-auto relative flex h-16 w-16 touch-manipulation items-center justify-center rounded-[22px] border border-amber-200/60 bg-gradient-to-br from-yellow-300 via-amber-500 to-red-600 text-black shadow-[0_12px_35px_rgba(245,166,35,.45)]"
           aria-label="Open giveaway"
         >
           <Gift className="h-9 w-9" strokeWidth={2.2} />
@@ -134,7 +132,7 @@ export default function GiveawayWidget() {
             onMouseDown={(e) => e.target === e.currentTarget && close()}>
             <motion.section role="dialog" aria-modal="true" aria-labelledby="giveaway-title"
               initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
-              className="glass-strong max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-[30px] border border-amber-400/30 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:rounded-[30px]">
+              className="glass-strong max-h-[92dvh] w-full max-w-md touch-pan-y overflow-y-auto overscroll-contain rounded-t-[30px] border border-amber-400/30 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-2xl sm:rounded-[30px]">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex gap-3">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gold-gradient text-2xl">🎁</span>

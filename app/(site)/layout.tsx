@@ -13,7 +13,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[100dvh] flex-col pb-24 md:pb-0">
+    <div className="flex min-h-[100svh] touch-pan-y flex-col pb-[calc(7rem+env(safe-area-inset-bottom))] md:min-h-[100dvh] md:pb-0">
       <VisitTracker />
       <GiveawayWidget />
       <TelegramFloatingButton />

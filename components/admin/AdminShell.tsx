@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { api } from "@/lib/api-client";
 import { useToast } from "@/components/ui/Toast";
 import type { Admin } from "@/types";
+import { useScrollLock } from "@/components/useScrollLock";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -79,6 +80,8 @@ export default function AdminShell({
       active = false;
     };
   }, [router]);
+
+  useScrollLock(sidebarOpen);
 
   async function logout() {
     try {
@@ -169,9 +172,9 @@ export default function AdminShell({
   );
 
   return (
-    <div className="min-h-[100dvh] bg-black/40">
+    <div className="min-h-[100svh] touch-pan-y bg-black/40 lg:min-h-[100dvh]">
       {/* Desktop sidebar */}
-      <aside className="glass-strong fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gold-500/10 lg:block">
+      <aside className="glass-strong fixed inset-y-0 left-0 z-40 hidden w-64 overflow-y-auto overscroll-contain border-r border-gold-500/10 lg:block">
         {SidebarContent}
       </aside>
 
@@ -191,7 +194,7 @@ export default function AdminShell({
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="glass-strong fixed inset-y-0 left-0 z-50 w-64 border-r border-gold-500/10 lg:hidden"
+              className="glass-strong fixed inset-y-0 left-0 z-50 w-64 touch-pan-y overflow-y-auto overscroll-contain border-r border-gold-500/10 lg:hidden"
             >
               {SidebarContent}
             </motion.aside>
