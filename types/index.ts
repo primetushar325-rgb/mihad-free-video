@@ -193,8 +193,6 @@ export interface GiveawayInput {
   buttonPosition?: GiveawayButtonPosition;
 }
 
-export interface PremiumApp { id:number; name:string; iconUrl:string; description:string; version:string; apkUrl:string; pageUrl:string; orderNumber:number; enabled:boolean; createdAt:string; updatedAt:string; }
-export interface YouTubeChannel { id:number; name:string; logoUrl:string; description:string; youtubeUrl:string; orderNumber:number; enabled:boolean; createdAt:string; updatedAt:string; }
 export interface NewsPost { id:number; title:string; body:string; imageUrl:string; youtubeUrl:string; externalUrl:string; topic:string; publishDate:string; enabled:boolean; pinned:boolean; orderNumber:number; createdAt:string; updatedAt:string; }
 export interface ExternalWebsite { id:number; name:string; url:string; icon:string; enabled:boolean; orderNumber:number; updatedAt:string; }
-export interface PlatformSettings { id:number; telegramEnabled:boolean; telegramUrl:string; telegramText:string; telegramIcon:string; telegramPosition:"bottom-left"|"bottom-right"; telegramAnimation:boolean; telegramDelay:number; installBannerEnabled:boolean; installTitle:string; installText:string; apkUrl:string; webInstallEnabled:boolean; updatedAt:string; }
+export interface PlatformSettings { id:number; telegramEnabled:boolean; telegramUrl:string; telegramText:string; telegramIcon:string; telegramPosition:"bottom-left"|"bottom-right"; telegramAnimation:boolean; telegramDelay:number; installBannerEnabled:boolean; installTitle:string; installText:string; apkUrl:string; webInstallEnabled:boolean; premiumAppsUrl:string; premiumAppsEnabled:boolean; youtubeExternalUrl:string; youtubeExternalEnabled:boolean; updatedAt:string; }

@@ -48,7 +48,7 @@ export default function Header() {
           <SearchBar compact />
         </div>
         <nav className="hidden items-center gap-1 lg:flex">
-          {[["/trending","Trending"],["/apps","Apps"],["/youtube","YouTube"],["/news","News"]].map(([href,label]) => (
+          {[["/trending","Trending"],["/news","News"]].map(([href,label]) => (
             <Link key={href} href={href} className="rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-400 hover:bg-white/5 hover:text-gold-300">{label}</Link>
           ))}
         </nav>

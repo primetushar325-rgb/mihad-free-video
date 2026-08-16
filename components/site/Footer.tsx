@@ -33,8 +33,6 @@ export default function Footer() {
             </Link>
             <Link href="/search" className="hover:text-gold-300">Search</Link>
             <Link href="/trending" className="hover:text-gold-300">Trending</Link>
-            <Link href="/apps" className="hover:text-gold-300">Apps</Link>
-            <Link href="/youtube" className="hover:text-gold-300">YouTube</Link>
             <Link href="/news" className="hover:text-gold-300">News</Link>
             <Link href="/admin" className="hover:text-gold-300">
               Admin

@@ -1,3 +1,0 @@
-import {withErrorHandler,ok,created,readJson} from '@/lib/api'; import {requireAdmin} from '@/lib/auth'; import {listPremiumApps,createPremiumApp} from '@/lib/repository'; import {appInput} from '@/lib/content-validation'; export const dynamic='force-dynamic';
-export const GET=withErrorHandler(async(req:Request)=>{const all=new URL(req.url).searchParams.get('all')==='1';if(all)await requireAdmin();return ok(await listPremiumApps(all))});
-export const POST=withErrorHandler(async(req:Request)=>{await requireAdmin();const x=appInput(await readJson(req) as Record<string,unknown>);return created({id:await createPremiumApp(x)})});

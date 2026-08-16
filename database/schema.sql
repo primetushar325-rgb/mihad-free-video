@@ -201,19 +201,7 @@ CREATE TABLE IF NOT EXISTS giveaway_participants (
 CREATE INDEX IF NOT EXISTS idx_giveaway_participants_version
   ON giveaway_participants (giveaway_version, created_at);
 -- Migration 0005: Apps, YouTube channels, news, external links and global platform controls.
-CREATE TABLE IF NOT EXISTS premium_apps (
- id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, icon_url TEXT NOT NULL DEFAULT '',
- description TEXT NOT NULL DEFAULT '', version TEXT NOT NULL DEFAULT '', apk_url TEXT NOT NULL,
- page_url TEXT NOT NULL DEFAULT '', order_number INTEGER NOT NULL DEFAULT 0,
- enabled INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX IF NOT EXISTS idx_premium_apps_order ON premium_apps(enabled, order_number, id);
-CREATE TABLE IF NOT EXISTS youtube_channels (
- id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, logo_url TEXT NOT NULL DEFAULT '',
- description TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL, order_number INTEGER NOT NULL DEFAULT 0,
- enabled INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX IF NOT EXISTS idx_youtube_channels_order ON youtube_channels(enabled, order_number, id);
+
 CREATE TABLE IF NOT EXISTS news_posts (
  id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL DEFAULT '',
  image_url TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL DEFAULT '', external_url TEXT NOT NULL DEFAULT '',
@@ -236,6 +224,8 @@ CREATE TABLE IF NOT EXISTS platform_settings (
  install_banner_enabled INTEGER NOT NULL DEFAULT 1, install_title TEXT NOT NULL DEFAULT 'Mihad Free Video',
  install_text TEXT NOT NULL DEFAULT 'Install our Android app for a faster experience',
  apk_url TEXT NOT NULL DEFAULT '/downloads/Mihad-Video.apk', web_install_enabled INTEGER NOT NULL DEFAULT 1,
+ premium_apps_url TEXT NOT NULL DEFAULT '', premium_apps_enabled INTEGER NOT NULL DEFAULT 0,
+ youtube_external_url TEXT NOT NULL DEFAULT '', youtube_external_enabled INTEGER NOT NULL DEFAULT 0,
  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 INSERT OR IGNORE INTO platform_settings(id) VALUES(1);
