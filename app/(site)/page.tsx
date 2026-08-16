@@ -7,6 +7,7 @@
 import HeroSlider from "@/components/site/HeroSlider";
 import ViralOrderBanner from "@/components/site/ViralOrderBanner";
 import HomeBrowser from "@/components/site/HomeBrowser";
+import ExternalWebsiteButtons from "@/components/site/ExternalWebsiteButtons";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import {
   getSlidesSafe,
@@ -62,6 +63,7 @@ export default async function HomePage() {
       <div className="pt-3">
         <ViralOrderBanner />
       </div>
+      <ExternalWebsiteButtons />
 
       {/* Hero: real slider if configured, otherwise a branded welcome banner */}
       {slides.length > 0 ? (

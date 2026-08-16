@@ -3,6 +3,8 @@ import Footer from "@/components/site/Footer";
 import AdSlot from "@/components/site/AdSlot";
 import VisitTracker from "@/components/site/VisitTracker";
 import GiveawayWidget from "@/components/giveaway/GiveawayWidget";
+import BottomNavigation from "@/components/site/BottomNavigation";
+import TelegramFloatingButton from "@/components/site/TelegramFloatingButton";
 
 // Shared chrome for all public pages: sticky header + footer with ads.
 export default function SiteLayout({
@@ -11,9 +13,11 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className="flex min-h-[100dvh] flex-col pb-24 md:pb-0">
       <VisitTracker />
       <GiveawayWidget />
+      <TelegramFloatingButton />
+      <BottomNavigation />
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-3 pt-4 sm:px-5">

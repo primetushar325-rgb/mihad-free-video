@@ -44,9 +44,14 @@ export default function Header() {
         </Link>
 
         {/* Desktop search */}
-        <div className="ml-auto hidden max-w-md flex-1 md:block">
+        <div className="ml-auto hidden max-w-sm flex-1 md:block">
           <SearchBar compact />
         </div>
+        <nav className="hidden items-center gap-1 lg:flex">
+          {[["/trending","Trending"],["/apps","Apps"],["/youtube","YouTube"],["/news","News"]].map(([href,label]) => (
+            <Link key={href} href={href} className="rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-400 hover:bg-white/5 hover:text-gold-300">{label}</Link>
+          ))}
+        </nav>
 
         {/* Mobile actions */}
         <div className="ml-auto flex items-center gap-1.5 md:hidden">

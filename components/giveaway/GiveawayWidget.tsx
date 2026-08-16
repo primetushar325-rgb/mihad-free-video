@@ -109,7 +109,7 @@ export default function GiveawayWidget() {
 
   return (
     <>
-      <div className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] ${side} z-40 flex flex-col items-center gap-1.5`}>
+      <div className={`fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] md:bottom-4 ${side} z-40 flex flex-col items-center gap-1.5`}>
         <div className="rounded-full border border-white/10 bg-black/85 px-2.5 py-1 font-mono text-[10px] font-bold text-white shadow-xl backdrop-blur">
           {time.total > 0 ? `${pad(time.days)}d ${pad(time.hours)}:${pad(time.minutes)}:${pad(time.seconds)}` : "GIVEAWAY ENDED"}
         </div>

@@ -17,6 +17,7 @@ import {
   Megaphone,
   Bell,
   Gift,
+  Flame, Smartphone, Youtube, Newspaper, Globe2, Send, AppWindow,
   Settings as SettingsIcon,
   LogOut,
   Menu,
@@ -31,11 +32,18 @@ import type { Admin } from "@/types";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/videos", label: "Videos", icon: Film },
+  { href: "/admin/trending", label: "Trending", icon: Flame },
+  { href: "/admin/apps", label: "Apps", icon: Smartphone },
+  { href: "/admin/youtube", label: "YouTube", icon: Youtube },
+  { href: "/admin/news", label: "News", icon: Newspaper },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/slides", label: "Slider", icon: Images },
   { href: "/admin/ads", label: "Ads", icon: Megaphone },
   { href: "/admin/notifications", label: "Notifications", icon: Bell },
+  { href: "/admin/websites", label: "Websites", icon: Globe2 },
+  { href: "/admin/telegram", label: "Telegram", icon: Send },
   { href: "/admin/giveaway", label: "Giveaway", icon: Gift },
+  { href: "/admin/app-install", label: "App Install", icon: AppWindow },
   { href: "/admin/settings", label: "Settings", icon: SettingsIcon },
 ];
 

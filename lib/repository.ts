@@ -19,6 +19,7 @@ import type {
   Admin,
   GiveawaySettings,
   GiveawayInput,
+  PremiumApp, YouTubeChannel, NewsPost, ExternalWebsite, PlatformSettings,
 } from "@/types";
 
 // ------------------------------------------------------------
@@ -1150,3 +1151,52 @@ export async function countGiveawayParticipants(version: number): Promise<number
   );
   return rows[0]?.c ?? 0;
 }
+
+
+// ============================================================
+// CONTENT PLATFORM (apps, channels, news, websites, Telegram/install)
+// ============================================================
+let platformSchemaPromise: Promise<void> | null = null;
+export async function ensurePlatformSchema(): Promise<void> {
+  if (!platformSchemaPromise) platformSchemaPromise = (async () => {
+    await execute(`CREATE TABLE IF NOT EXISTS premium_apps (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, icon_url TEXT NOT NULL DEFAULT '', description TEXT NOT NULL DEFAULT '', version TEXT NOT NULL DEFAULT '', apk_url TEXT NOT NULL, page_url TEXT NOT NULL DEFAULT '', order_number INTEGER NOT NULL DEFAULT 0, enabled INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await execute("CREATE INDEX IF NOT EXISTS idx_premium_apps_order ON premium_apps(enabled, order_number, id)");
+    await execute(`CREATE TABLE IF NOT EXISTS youtube_channels (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, logo_url TEXT NOT NULL DEFAULT '', description TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL, order_number INTEGER NOT NULL DEFAULT 0, enabled INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await execute("CREATE INDEX IF NOT EXISTS idx_youtube_channels_order ON youtube_channels(enabled, order_number, id)");
+    await execute(`CREATE TABLE IF NOT EXISTS news_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL DEFAULT '', image_url TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL DEFAULT '', external_url TEXT NOT NULL DEFAULT '', topic TEXT NOT NULL DEFAULT '', publish_date TEXT NOT NULL DEFAULT (datetime('now')), enabled INTEGER NOT NULL DEFAULT 1, pinned INTEGER NOT NULL DEFAULT 0, order_number INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await execute("CREATE INDEX IF NOT EXISTS idx_news_feed ON news_posts(enabled, pinned, publish_date, order_number)");
+    await execute(`CREATE TABLE IF NOT EXISTS external_websites (id INTEGER PRIMARY KEY, name TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '', icon TEXT NOT NULL DEFAULT '🌐', enabled INTEGER NOT NULL DEFAULT 0, order_number INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await execute("INSERT OR IGNORE INTO external_websites(id, order_number) VALUES (1,1)"); await execute("INSERT OR IGNORE INTO external_websites(id, order_number) VALUES (2,2)");
+    await execute(`CREATE TABLE IF NOT EXISTS platform_settings (id INTEGER PRIMARY KEY CHECK(id=1), telegram_enabled INTEGER NOT NULL DEFAULT 0, telegram_url TEXT NOT NULL DEFAULT '', telegram_text TEXT NOT NULL DEFAULT 'Monetization Telegram', telegram_icon TEXT NOT NULL DEFAULT '✈️', telegram_position TEXT NOT NULL DEFAULT 'bottom-left', telegram_animation INTEGER NOT NULL DEFAULT 1, telegram_delay INTEGER NOT NULL DEFAULT 0, install_banner_enabled INTEGER NOT NULL DEFAULT 1, install_title TEXT NOT NULL DEFAULT 'Mihad Free Video', install_text TEXT NOT NULL DEFAULT 'Install our Android app for a faster experience', apk_url TEXT NOT NULL DEFAULT '/downloads/Mihad-Video.apk', web_install_enabled INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await execute("INSERT OR IGNORE INTO platform_settings(id) VALUES(1)");
+  })().catch(e => { platformSchemaPromise=null; throw e; });
+  return platformSchemaPromise;
+}
+
+type AppRow={id:number;name:string;icon_url:string;description:string;version:string;apk_url:string;page_url:string;order_number:number;enabled:number;created_at:string;updated_at:string};
+type ChannelRow={id:number;name:string;logo_url:string;description:string;youtube_url:string;order_number:number;enabled:number;created_at:string;updated_at:string};
+type NewsRow={id:number;title:string;body:string;image_url:string;youtube_url:string;external_url:string;topic:string;publish_date:string;enabled:number;pinned:number;order_number:number;created_at:string;updated_at:string};
+type WebsiteRow={id:number;name:string;url:string;icon:string;enabled:number;order_number:number;updated_at:string};
+type PlatformRow={id:number;telegram_enabled:number;telegram_url:string;telegram_text:string;telegram_icon:string;telegram_position:string;telegram_animation:number;telegram_delay:number;install_banner_enabled:number;install_title:string;install_text:string;apk_url:string;web_install_enabled:number;updated_at:string};
+const mapApp=(r:AppRow):PremiumApp=>({id:r.id,name:r.name,iconUrl:r.icon_url,description:r.description,version:r.version,apkUrl:r.apk_url,pageUrl:r.page_url,orderNumber:r.order_number,enabled:toBool(r.enabled),createdAt:r.created_at,updatedAt:r.updated_at});
+const mapChannel=(r:ChannelRow):YouTubeChannel=>({id:r.id,name:r.name,logoUrl:r.logo_url,description:r.description,youtubeUrl:r.youtube_url,orderNumber:r.order_number,enabled:toBool(r.enabled),createdAt:r.created_at,updatedAt:r.updated_at});
+const mapNews=(r:NewsRow):NewsPost=>({id:r.id,title:r.title,body:r.body,imageUrl:r.image_url,youtubeUrl:r.youtube_url,externalUrl:r.external_url,topic:r.topic,publishDate:r.publish_date,enabled:toBool(r.enabled),pinned:toBool(r.pinned),orderNumber:r.order_number,createdAt:r.created_at,updatedAt:r.updated_at});
+const mapWebsite=(r:WebsiteRow):ExternalWebsite=>({id:r.id,name:r.name,url:r.url,icon:r.icon,enabled:toBool(r.enabled),orderNumber:r.order_number,updatedAt:r.updated_at});
+export async function listPremiumApps(all=false){await ensurePlatformSchema();return (await query<AppRow>(`SELECT * FROM premium_apps ${all?'':'WHERE enabled=1'} ORDER BY order_number,id`)).map(mapApp)}
+export async function createPremiumApp(x:Omit<PremiumApp,'id'|'createdAt'|'updatedAt'>){await ensurePlatformSchema();return insertAndReturnId("INSERT INTO premium_apps(name,icon_url,description,version,apk_url,page_url,order_number,enabled) VALUES(?,?,?,?,?,?,?,?)",[x.name,x.iconUrl,x.description,x.version,x.apkUrl,x.pageUrl,x.orderNumber,x.enabled?1:0])}
+export async function updatePremiumApp(id:number,x:Partial<PremiumApp>){await ensurePlatformSchema();return updateContentRow('premium_apps',id,x,{name:'name',iconUrl:'icon_url',description:'description',version:'version',apkUrl:'apk_url',pageUrl:'page_url',orderNumber:'order_number',enabled:'enabled'})}
+export async function deletePremiumApp(id:number){await ensurePlatformSchema();return execute("DELETE FROM premium_apps WHERE id=?",[id])}
+export async function listYouTubeChannels(all=false){await ensurePlatformSchema();return (await query<ChannelRow>(`SELECT * FROM youtube_channels ${all?'':'WHERE enabled=1'} ORDER BY order_number,id`)).map(mapChannel)}
+export async function createYouTubeChannel(x:Omit<YouTubeChannel,'id'|'createdAt'|'updatedAt'>){await ensurePlatformSchema();return insertAndReturnId("INSERT INTO youtube_channels(name,logo_url,description,youtube_url,order_number,enabled) VALUES(?,?,?,?,?,?)",[x.name,x.logoUrl,x.description,x.youtubeUrl,x.orderNumber,x.enabled?1:0])}
+export async function updateYouTubeChannel(id:number,x:Partial<YouTubeChannel>){await ensurePlatformSchema();return updateContentRow('youtube_channels',id,x,{name:'name',logoUrl:'logo_url',description:'description',youtubeUrl:'youtube_url',orderNumber:'order_number',enabled:'enabled'})}
+export async function deleteYouTubeChannel(id:number){await ensurePlatformSchema();return execute("DELETE FROM youtube_channels WHERE id=?",[id])}
+export async function listNewsPosts(all=false){await ensurePlatformSchema();return (await query<NewsRow>(`SELECT * FROM news_posts ${all ? "" : "WHERE enabled=1 AND publish_date <= datetime('now')"} ORDER BY pinned DESC, publish_date DESC, order_number,id DESC`)).map(mapNews)}
+export async function createNewsPost(x:Omit<NewsPost,'id'|'createdAt'|'updatedAt'>){await ensurePlatformSchema();return insertAndReturnId("INSERT INTO news_posts(title,body,image_url,youtube_url,external_url,topic,publish_date,enabled,pinned,order_number) VALUES(?,?,?,?,?,?,?,?,?,?)",[x.title,x.body,x.imageUrl,x.youtubeUrl,x.externalUrl,x.topic,x.publishDate,x.enabled?1:0,x.pinned?1:0,x.orderNumber])}
+export async function updateNewsPost(id:number,x:Partial<NewsPost>){await ensurePlatformSchema();return updateContentRow('news_posts',id,x,{title:'title',body:'body',imageUrl:'image_url',youtubeUrl:'youtube_url',externalUrl:'external_url',topic:'topic',publishDate:'publish_date',enabled:'enabled',pinned:'pinned',orderNumber:'order_number'})}
+export async function deleteNewsPost(id:number){await ensurePlatformSchema();return execute("DELETE FROM news_posts WHERE id=?",[id])}
+export async function listExternalWebsites(all=false){await ensurePlatformSchema();return (await query<WebsiteRow>(`SELECT * FROM external_websites ${all?'':'WHERE enabled=1'} ORDER BY order_number,id`)).map(mapWebsite)}
+export async function updateExternalWebsite(id:number,x:Partial<ExternalWebsite>){await ensurePlatformSchema();return updateContentRow('external_websites',id,x,{name:'name',url:'url',icon:'icon',enabled:'enabled',orderNumber:'order_number'})}
+async function updateContentRow(table:string,id:number,x:Record<string,unknown>,map:Record<string,string>){const f:string[]=[];const p:unknown[]=[];for(const [k,c] of Object.entries(map)){if(x[k]!==undefined){f.push(`${c}=?`);p.push(typeof x[k]==='boolean'?(x[k]?1:0):x[k])}}if(!f.length)return;f.push("updated_at=datetime('now')");p.push(id);await execute(`UPDATE ${table} SET ${f.join(',')} WHERE id=?`,p)}
+export async function getPlatformSettings():Promise<PlatformSettings>{await ensurePlatformSchema();const r=(await query<PlatformRow>("SELECT * FROM platform_settings WHERE id=1"))[0];return {id:1,telegramEnabled:toBool(r.telegram_enabled),telegramUrl:r.telegram_url,telegramText:r.telegram_text,telegramIcon:r.telegram_icon,telegramPosition:r.telegram_position==='bottom-right'?'bottom-right':'bottom-left',telegramAnimation:toBool(r.telegram_animation),telegramDelay:r.telegram_delay,installBannerEnabled:toBool(r.install_banner_enabled),installTitle:r.install_title,installText:r.install_text,apkUrl:r.apk_url,webInstallEnabled:toBool(r.web_install_enabled),updatedAt:r.updated_at}}
+export async function updatePlatformSettings(x:Partial<PlatformSettings>){await ensurePlatformSchema();return updateContentRow('platform_settings',1,x,{telegramEnabled:'telegram_enabled',telegramUrl:'telegram_url',telegramText:'telegram_text',telegramIcon:'telegram_icon',telegramPosition:'telegram_position',telegramAnimation:'telegram_animation',telegramDelay:'telegram_delay',installBannerEnabled:'install_banner_enabled',installTitle:'install_title',installText:'install_text',apkUrl:'apk_url',webInstallEnabled:'web_install_enabled'})}
+export async function listTrendingVideos(limit=60):Promise<VideoWithCategory[]>{const rows=await query<VideoRow>(`SELECT v.*,c.name category_name,c.slug category_slug,COUNT(d.id) downloads_count FROM videos v LEFT JOIN categories c ON c.id=v.category_id LEFT JOIN downloads d ON d.video_id=v.id GROUP BY v.id ORDER BY downloads_count DESC,v.featured DESC,v.created_at DESC LIMIT ?`,[limit]);return rows.map(mapVideoWithCategory)}
