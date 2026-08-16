@@ -26,6 +26,22 @@ const nextConfig = {
         source: "/manifest.webmanifest",
         headers: [{ key: "Content-Type", value: "application/manifest+json" }],
       },
+      {
+        source: "/downloads/Mihad-Video.apk",
+        headers: [
+          { key: "Content-Type", value: "application/vnd.android.package-archive" },
+          { key: "Content-Disposition", value: "attachment; filename=\"Mihad-Video.apk\"" },
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+        ],
+      },
+      {
+        source: "/.well-known/assetlinks.json",
+        headers: [
+          { key: "Content-Type", value: "application/json; charset=utf-8" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
     ];
   },
 };

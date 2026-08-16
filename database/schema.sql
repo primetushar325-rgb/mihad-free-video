@@ -180,6 +180,7 @@ CREATE TABLE IF NOT EXISTS giveaway_settings (
   description              TEXT NOT NULL DEFAULT 'Win a YouTube Channel!',
   start_time               TEXT,
   end_time                 TEXT,
+  duration_seconds         INTEGER NOT NULL DEFAULT 0,
   button_position          TEXT NOT NULL DEFAULT 'bottom-right',
   giveaway_version         INTEGER NOT NULL DEFAULT 1,
   updated_at               TEXT NOT NULL DEFAULT (datetime('now'))

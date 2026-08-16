@@ -172,6 +172,7 @@ export interface GiveawaySettings {
   description: string;
   startTime: string | null;
   endTime: string | null;
+  durationSeconds: number;
   buttonPosition: GiveawayButtonPosition;
   giveawayVersion: number;
   updatedAt: string;
@@ -188,5 +189,6 @@ export interface GiveawayInput {
   description?: string;
   startTime?: string | null;
   endTime?: string | null;
+  durationSeconds?: number;
   buttonPosition?: GiveawayButtonPosition;
 }

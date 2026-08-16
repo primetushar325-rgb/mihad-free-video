@@ -37,10 +37,11 @@ export default function GiveawayManager() {
     if (!form) return;
     setSaving(true);
     try {
-      const payload = { ...form, ...override };
+      const payload = { ...form, ...override, durationSeconds: 0 };
       if (computedDurationEnd) {
         payload.startTime = new Date().toISOString();
         payload.endTime = computedDurationEnd;
+        payload.durationSeconds = Math.round((Date.parse(computedDurationEnd) - Date.now()) / 1000);
       }
       const result = await api.put<GiveawaySettings & { participantCount?: number }>("/api/giveaway", payload);
       setForm(result);
@@ -81,6 +82,7 @@ export default function GiveawayManager() {
           {(["days","hours","minutes","seconds"] as const).map((key) => <Field key={key} label={key}><input className="field" type="number" min="0" value={duration[key]} onChange={(e) => setDuration({ ...duration, [key]: Math.max(0, Number(e.target.value)) })} /></Field>)}
         </div>
         {computedDurationEnd && <p className="mt-3 text-xs text-gold-300">Duration ends: {new Date(computedDurationEnd).toLocaleString()}</p>}
+        {!computedDurationEnd && form.durationSeconds > 0 && <p className="mt-3 text-xs text-neutral-500">Last saved duration: {form.durationSeconds.toLocaleString()} seconds</p>}
       </section>
 
       <AdminPreview config={form} endTime={computedDurationEnd || form.endTime} />

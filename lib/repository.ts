@@ -994,6 +994,7 @@ interface GiveawayRow {
   description: string;
   start_time: string | null;
   end_time: string | null;
+  duration_seconds: number;
   button_position: string;
   giveaway_version: number;
   updated_at: string;
@@ -1018,10 +1019,15 @@ async function ensureGiveawaySchema(): Promise<void> {
         telegram_url TEXT NOT NULL DEFAULT '',
         description TEXT NOT NULL DEFAULT 'Win a YouTube Channel!',
         start_time TEXT, end_time TEXT,
+        duration_seconds INTEGER NOT NULL DEFAULT 0,
         button_position TEXT NOT NULL DEFAULT 'bottom-right',
         giveaway_version INTEGER NOT NULL DEFAULT 1,
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`);
+      const giveawayColumns = await query<{ name: string }>("PRAGMA table_info(giveaway_settings)");
+      if (!giveawayColumns.some((column) => column.name === "duration_seconds")) {
+        await execute("ALTER TABLE giveaway_settings ADD COLUMN duration_seconds INTEGER NOT NULL DEFAULT 0");
+      }
       await execute("INSERT OR IGNORE INTO giveaway_settings (id) VALUES (1)");
       await execute(`CREATE TABLE IF NOT EXISTS giveaway_participants (
         id INTEGER PRIMARY KEY AUTOINCREMENT, giveaway_version INTEGER NOT NULL,
@@ -1052,6 +1058,7 @@ const DEFAULT_GIVEAWAY: GiveawaySettings = {
   description: "Win a YouTube Channel!",
   startTime: null,
   endTime: null,
+  durationSeconds: 0,
   buttonPosition: "bottom-right",
   giveawayVersion: 1,
   updatedAt: "",
@@ -1070,6 +1077,7 @@ function mapGiveaway(r: GiveawayRow): GiveawaySettings {
     description: r.description || "",
     startTime: r.start_time || null,
     endTime: r.end_time || null,
+    durationSeconds: Number(r.duration_seconds) || 0,
     buttonPosition: r.button_position === "bottom-left" ? "bottom-left" : "bottom-right",
     giveawayVersion: Number(r.giveaway_version) || 1,
     updatedAt: r.updated_at || "",
@@ -1098,6 +1106,7 @@ export async function updateGiveawaySettings(input: GiveawayInput): Promise<void
     description: "description",
     startTime: "start_time",
     endTime: "end_time",
+    durationSeconds: "duration_seconds",
     buttonPosition: "button_position",
   };
   const fields: string[] = [];

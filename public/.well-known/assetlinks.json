@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.mihad.freevideo",
+        "sha256_cert_fingerprints": ["5B:2F:3A:49:8A:E1:D3:0C:2F:21:C2:0F:C4:BA:53:0C:E0:AB:73:A4:64:6E:EB:6B:77:43:5F:8C:E2:FA:6C:0D"]
+      }
+    }]

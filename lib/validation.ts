@@ -234,6 +234,12 @@ export function validateGiveaway(body: unknown): {
   }
   if (value.startTime && value.endTime && Date.parse(value.endTime) <= Date.parse(value.startTime))
     errors.endTime = "End time must be after start time.";
+  if (b.durationSeconds !== undefined) {
+    const duration = Number(b.durationSeconds);
+    if (!Number.isInteger(duration) || duration < 0 || duration > 31536000)
+      errors.durationSeconds = "Duration must be between 0 and 31,536,000 seconds.";
+    else value.durationSeconds = duration;
+  }
   if (b.buttonPosition !== undefined) {
     if (b.buttonPosition !== "bottom-right" && b.buttonPosition !== "bottom-left")
       errors.buttonPosition = "Invalid button position.";
