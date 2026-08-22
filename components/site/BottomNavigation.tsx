@@ -25,17 +25,14 @@ export default function BottomNavigation() {
 }
 function Internal({ href, label, Icon, active }: { href: string; label: string; Icon: typeof Home; active: boolean }) {
   return (
-    <Link href={href} data-active={active} className="relative z-10 flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-1 py-2 text-[9px] font-semibold transition">
-      <div className={`pointer-events-none absolute -top-5 left-1/2 -translate-x-1/2 h-10 w-10 rounded-full bg-[var(--gold)] shadow-gold flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(.68,-.55,.27,1.55)] ${active ? "scale-110 translate-y-[-20%] animate-[popBounce_.3s_ease-out]" : "scale-0 translate-y-0 opacity-0"}`}>
-        <Icon className="h-5 w-5 text-black relative z-10" />
-      </div>
-      <Icon className={`h-5 w-5 relative z-10 transition ${active ? "text-black scale-110" : "text-neutral-400"}`} />
-      <span className={`truncate relative z-10 ${active ? "text-black" : "text-neutral-400"}`}>{label}</span>
+    <Link href={href} className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-1 py-2 text-[9px] font-semibold transition ${active ? "bg-gold-gradient text-black shadow-gold" : "text-neutral-400"}`}>
+      <Icon className="h-5 w-5" />
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
 function External({ label, Icon, href, onComing }: { label: string; Icon: typeof Home; href: string; onComing: () => void }) {
-  const cls = "relative z-10 flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-1 py-2 text-[9px] font-semibold text-neutral-400 transition hover:text-gold-300";
+  const cls = "flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl px-1 py-2 text-[9px] font-semibold text-neutral-400 transition hover:text-gold-300";
   if (href) return <a href={href} className={cls} rel="external"><Icon className="h-5 w-5" /><span className="truncate">{label}</span></a>;
   return <button type="button" onClick={onComing} className={cls} title={`${label} coming soon`}><Icon className="h-5 w-5" /><span className="truncate">{label}</span></button>;
 }
