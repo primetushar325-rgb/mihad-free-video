@@ -30,7 +30,7 @@ export default function BottomNavigation() {
     const x = itemRect.left - navRect.left + itemRect.width / 2 - indicator.offsetWidth / 2;
     const y = itemRect.top - navRect.top + itemRect.height / 2 - indicator.offsetHeight / 2;
     indicator.style.opacity = "1";
-    indicator.style.transform = `translate(${x}px, ${y}px)`;
+    indicator.style.width=itemRect.width*0.85+"px";indicator.style.height=itemRect.height*0.85+"px";indicator.style.transform=`translate(${x}px, ${y}px)`;
     indicator.style.borderRadius = "60% 40% 45% 55%";
     const t = setTimeout(() => { indicator.style.borderRadius = "50% 40% 55% 45%"; }, 350);
     return () => clearTimeout(t);
