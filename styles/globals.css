@@ -250,3 +250,4 @@ input[type="number"]::-webkit-inner-spin-button {
     transform: translateX(100%);
   }
 }
+.liquid-indicator{position:absolute;width:3.5rem;height:3.5rem;background:var(--gold);border-radius:50% 40% 55% 45%;will-change:transform;transition:transform .45s cubic-bezier(.68,-.55,.27,1.55),border-radius .35s ease;pointer-events:none;z-index:0;}
