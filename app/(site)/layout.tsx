@@ -4,7 +4,7 @@ import AdSlot from "@/components/site/AdSlot";
 import VisitTracker from "@/components/site/VisitTracker";
 import GiveawayWidget from "@/components/giveaway/GiveawayWidget";
 import BottomNavigation from "@/components/site/BottomNavigation";
-import TelegramFloatingButton from "@/components/site/TelegramFloatingButton";
+import WhatsAppFloatingButton from "@/components/site/WhatsAppFloatingButton";
 
 // Shared chrome for all public pages: sticky header + footer with ads.
 export default function SiteLayout({
@@ -16,7 +16,7 @@ export default function SiteLayout({
     <div className="flex min-h-[100svh] touch-pan-y flex-col pb-[calc(7rem+env(safe-area-inset-bottom))] md:min-h-[100dvh] md:pb-0">
       <VisitTracker />
       <GiveawayWidget />
-      <TelegramFloatingButton />
+      <WhatsAppFloatingButton />
       <BottomNavigation />
       <Header />
       <main className="flex-1">
