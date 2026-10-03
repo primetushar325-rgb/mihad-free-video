@@ -226,6 +226,10 @@ CREATE TABLE IF NOT EXISTS platform_settings (
  apk_url TEXT NOT NULL DEFAULT '/downloads/Mihad-Video.apk', web_install_enabled INTEGER NOT NULL DEFAULT 1,
  premium_apps_url TEXT NOT NULL DEFAULT '', premium_apps_enabled INTEGER NOT NULL DEFAULT 0,
  youtube_external_url TEXT NOT NULL DEFAULT '', youtube_external_enabled INTEGER NOT NULL DEFAULT 0,
+ whatsapp_enabled INTEGER NOT NULL DEFAULT 0, whatsapp_phone TEXT NOT NULL DEFAULT '',
+ whatsapp_message TEXT NOT NULL DEFAULT 'Hello Mihad Free Video Support! I need help regarding your website.',
+ whatsapp_position TEXT NOT NULL DEFAULT 'right', whatsapp_visible INTEGER NOT NULL DEFAULT 1,
+ whatsapp_visibility TEXT NOT NULL DEFAULT 'all', whatsapp_tooltip TEXT NOT NULL DEFAULT 'Chat with support on WhatsApp',
  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 INSERT OR IGNORE INTO platform_settings(id) VALUES(1);

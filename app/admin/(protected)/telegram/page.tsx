@@ -1,1 +1,2 @@
-import M from'@/components/admin/PlatformSettingsManager';export default function Page(){return <M mode="telegram"/>}
+import { redirect } from 'next/navigation';
+export default function Page(){redirect('/admin/whatsapp')}

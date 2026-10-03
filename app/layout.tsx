@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import { PlatformSettingsProvider } from "@/components/PlatformSettingsProvider";
@@ -10,18 +9,6 @@ import AdScripts from "@/components/site/AdScripts";
 import { getSettingsSafe } from "@/lib/safe";
 import { siteUrl, siteName } from "@/lib/utils";
 import "@/styles/globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-poppins",
-  display: "swap",
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettingsSafe();
@@ -104,7 +91,7 @@ export default async function RootLayout({
   const adsenseClient = settings.adsenseClient?.trim();
 
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} dark`}>
+    <html lang="en" className="dark">
       <head>
         <meta name="monetag" content="f622def877abebe418e5d809d67d9c50" />
         {adsenseClient && settings.enableAds && (

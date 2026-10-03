@@ -1,5 +1,5 @@
 /* Mihad Free Video — first-party PWA service worker */
-const VERSION = "mihad-pwa-v4";
+const VERSION = "mihad-pwa-v5";
 const STATIC_CACHE = `${VERSION}-static`;
 const APP_SHELL = [
   "/",
